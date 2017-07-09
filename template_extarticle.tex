@@ -1,0 +1,158 @@
+% BETTER ERROR MESSAGES
+\errorcontextlines 10000
+
+% DOCUMENT ATTRIBUTES
+\documentclass[12pt, a5paper]{extarticle}
+% 12pt         : main font size
+% a4paper      : paper format
+% parskip=full : ???
+% openany      : no need for an additional (second) pagebreak after a chapter to move new chapters always to the right page
+\usepackage[
+	top=16mm,
+	bottom=16mm,
+	left=20mm,
+	right=20mm%,
+	%bindingoffset=10mm,
+	%heightrounded,
+]{geometry}
+
+% FIGURES (wrapping text around figures, ...)
+\usepackage{wrapfig}
+\usepackage{float}
+% PREDEFINED COLORS
+\usepackage[dvipsnames]{xcolor}
+% LAST PAGE NUMBER AVAILABILITY
+\usepackage{lastpage}
+
+% make chapter pages use the empty page style as well
+\usepackage{etoolbox}
+\patchcmd{\chapter}{plain}{fancy}{}{}
+\patchcmd{\part}{plain}{fancy}{}{}
+
+% define a command for phrases without breaks
+\def\nonbreaking{\hfil\penalty 100 \hfilneg \hbox}
+
+% FIX FOR PANDOC 1.14 and later
+\providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+% LINKS
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks=true,
+	urlcolor=CadetBlue,
+	filecolor=Gray,
+	citecolor=Black,
+	linkcolor=Black
+}
+
+% patch maketitle command to not use newpage
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\@maketitle}{\newpage}{}{}{}
+\makeatother
+
+% PARAGRAPH FORMATTING
+\usepackage{titlesec}
+
+\let\originalsection\section
+\renewcommand{\section}[1]{\originalsection[#1]{\centering #1}}
+\renewcommand{\thesection}{\hspace*{-1.0em}}
+
+\setlength\parindent{0pt}
+\setlength{\parskip}{0.2em}
+\setlength{\baselineskip}{0.15em}
+
+% FONTS
+\usepackage{fontspec}
+\usepackage{xunicode}
+\usepackage[UTF8]{ctex}
+\defaultfontfeatures{Mapping=tex-text, Scale=MatchLowercase} % what does this do? -- influences how quotes are rendered
+\setCJKmainfont[Scale=1.2]{WenQuanYi Micro Hei}
+\setmainfont[Scale=1]{Open Sans}
+\setmonofont{Liberation Mono}
+
+% AUTOMATICAL PINYIN PHONETIC SCRIPT
+\newfontfamily{\DVS}{DejaVu Sans}
+\usepackage{xpinyin}
+\xpinyinsetup{ratio={.6}, hsep={.5em plus .1em}, vsep={1.1em}, multiple={\color{red}}, pysep={.2em}, footnote=false, font=\DVS}
+
+\usepackage{boxedminipage}
+\newlength{\currentparskip}% define currentparskip to be a length
+\newlength{\currentbaselineskip}% define currentparskip to be a length
+
+% DEF 4 using parbox
+% \newenvironment{songverse}
+% {%
+% 	\begin{samepage}%
+% 	\begin{center}%
+% }{%
+% 	\end{center}%
+% 	\end{samepage}%
+% 	\par
+% }
+
+% DEF 3 using samepage environment
+% \newenvironment{songverse}
+% {%
+% 	\begin{samepage}%
+% 	\begin{center}%
+% }{%
+% 	\end{center}%
+% 	\end{samepage}%
+% 	% \leavevmode%
+% }
+
+% DEF 2 using minipage environment
+% \newenvironment{songverse}
+% {%
+%     \setlength{\currentbaselineskip}{\baselineskip}
+%     \setlength{\currentparskip}{\parskip}% save the value
+%
+%     \begin{minipage}{1.0\textwidth}%
+%
+%     \setlength{\parskip}{\currentparskip}% restore the value
+% 	\setlength{\baselineskip}{\currentbaselineskip}% restore the value
+%
+%     \begin{center}%
+% }{%
+%     \end{center}%
+%     \end{minipage}%
+%     \leavevmode \\\\%
+% }
+
+% DEF 1 using tabular environment
+\newenvironment{songverse}% start new environment definition
+{%
+	\setlength{\currentparskip}{\parskip}% Save current \parskip
+	\setlength{\currentbaselineskip}{\baselineskip}
+
+	\par%\vspace{\baselineskip}% Add possible separation
+
+	\noindent\begin{tabular}[t]{@{} p{\textwidth} @{}}% ???
+	\centering% make it centered
+
+	\setlength{\parskip}{\currentparskip}% Restore current \parskip
+	\setlength{\baselineskip}{\currentbaselineskip}% Restore current \parskip
+}
+{%
+  \end{tabular}%end the tabular environment
+  \par\vspace{-0.5\baselineskip}% Add possible vertical separation
+}
+
+% ==============================
+% ========== DOCUMENT ==========
+% ==============================
+% DOCUMENT META INFORMATION
+$if(title)$\title{$title$}$endif$
+$if(author)$\author{$author$}$endif$
+\date{}
+
+% BEGIN
+\begin{document}
+$if(title)$
+{\let\cleardoublepage\clearpage
+\maketitle
+}
+$endif$
+$body$
+\end{document}

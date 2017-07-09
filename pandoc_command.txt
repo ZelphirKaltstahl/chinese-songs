@@ -1,0 +1,1 @@
+pandoc --read=markdown+fancy_lists+startnum --preserve-tabs --standalone --template=template_extarticle.tex --latex-engine=xelatex 木兰情.md -o 木兰情.pdf
